@@ -1,12 +1,12 @@
 package com.sindarin.farsightedmobs;
 
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ai.attributes.Attribute;
-import net.minecraft.entity.ai.attributes.Attributes;
-import net.minecraft.entity.ai.attributes.ModifiableAttributeInstance;
-import net.minecraft.entity.monster.MonsterEntity;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.Attribute;
+import net.minecraft.world.entity.ai.attributes.AttributeInstance;
+import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.monster.Monster;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -43,8 +43,8 @@ public class FarsightedMobs {
         LivingEntity livingEntity = (LivingEntity)entity;
 
         // If monster, update the follow range
-        if (livingEntity instanceof MonsterEntity) {
-            MonsterEntity mob = (MonsterEntity) livingEntity;
+        if (livingEntity instanceof Monster) {
+            Monster mob = (Monster) livingEntity;
             // But only when the new value is bigger than the old
             double originalFollow = mob.getAttributeBaseValue(Attributes.FOLLOW_RANGE);
             if (originalFollow < Config.SERVER.defaultHostileRange.get()) {
@@ -65,7 +65,7 @@ public class FarsightedMobs {
 
     // Change the base value of the given attribute on the given entity to the given value
     private static void ChangeBaseAttributeValue(LivingEntity entity, Attribute attribute, double value) {
-        ModifiableAttributeInstance attributeInstance = entity.getAttribute(attribute);
+        AttributeInstance attributeInstance = entity.getAttribute(attribute);
         // Safety goes first
         if (attributeInstance == null) {
             LOGGER.warn("No attribute instance found for " + attribute.getRegistryName());
