@@ -79,7 +79,6 @@ public class FarsightedMobs {
         attributeInstance.setBaseValue(value);
     }
 
-    @SuppressWarnings("rawtypes")
     private static void FixFollowRange(LivingEntity livingEntity) {
         if (livingEntity instanceof Mob mob) {
             mob.targetSelector.getAvailableGoals().forEach(wrappedGoal -> {
