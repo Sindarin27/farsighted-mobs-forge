@@ -43,12 +43,10 @@ public class FarsightedMobs {
         Entity entity = event.getEntity();
 
         // Check for living entity stuff
-        if (!(entity instanceof LivingEntity)) return;
-        LivingEntity livingEntity = (LivingEntity)entity;
+        if (!(entity instanceof LivingEntity livingEntity)) return;
 
         // If monster, update the follow range
-        if (livingEntity instanceof Monster) {
-            Monster mob = (Monster) livingEntity;
+        if (livingEntity instanceof Monster mob) {
             // But only when the new value is bigger than the old
             double originalFollow = mob.getAttributeBaseValue(Attributes.FOLLOW_RANGE);
             if (originalFollow < Config.SERVER.defaultHostileRange.get()) {
@@ -58,14 +56,14 @@ public class FarsightedMobs {
 
         // Get type and find attributes to change
         EntityType<?> type = livingEntity.getType();
-        if (!Config.SERVER.mobAttributeMap.containsKey(type)) return;
-        List<Pair<Attribute, Double>> values = Config.SERVER.mobAttributeMap.get(type);
+        if (Config.SERVER.mobAttributeMap.containsKey(type)) {
+            List<Pair<Attribute, Double>> values = Config.SERVER.mobAttributeMap.get(type);
 
-        // Change attributes
-        for (Pair<Attribute, Double> change : values) {
-            ChangeBaseAttributeValue(livingEntity, change.getLeft(), change.getRight());
+            // Change attributes
+            for (Pair<Attribute, Double> change : values) {
+                ChangeBaseAttributeValue(livingEntity, change.getLeft(), change.getRight());
+            }
         }
-
         // Fix the minecraft bug that causes entities to never update their follow range by updating it once they spawn
         FixFollowRange(livingEntity);
     }
