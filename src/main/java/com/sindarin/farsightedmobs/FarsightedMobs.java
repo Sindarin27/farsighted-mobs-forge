@@ -3,9 +3,13 @@ package com.sindarin.farsightedmobs;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.ai.goal.Goal;
+import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
+import net.minecraft.world.entity.ai.goal.target.TargetGoal;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
@@ -61,6 +65,9 @@ public class FarsightedMobs {
         for (Pair<Attribute, Double> change : values) {
             ChangeBaseAttributeValue(livingEntity, change.getLeft(), change.getRight());
         }
+
+        // Fix the minecraft bug that causes entities to never update their follow range by updating it once they spawn
+        FixFollowRange(livingEntity);
     }
 
     // Change the base value of the given attribute on the given entity to the given value
@@ -72,5 +79,17 @@ public class FarsightedMobs {
             return;
         }
         attributeInstance.setBaseValue(value);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private static void FixFollowRange(LivingEntity livingEntity) {
+        if (livingEntity instanceof Mob mob) {
+            mob.targetSelector.getAvailableGoals().forEach(wrappedGoal -> {
+                Goal goal = wrappedGoal.getGoal();
+                if (goal instanceof NearestAttackableTargetGoal natGoal) {
+                    natGoal.targetConditions = natGoal.targetConditions.range(livingEntity.getAttributeValue(Attributes.FOLLOW_RANGE));
+                }
+            });
+        }
     }
 }
