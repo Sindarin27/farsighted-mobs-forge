@@ -6,6 +6,8 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.attributes.Attribute;
 import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.entity.ai.attributes.ModifiableAttributeInstance;
+import net.minecraft.entity.ai.goal.Goal;
+import net.minecraft.entity.ai.goal.NearestAttackableTargetGoal;
 import net.minecraft.entity.monster.MonsterEntity;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
@@ -54,13 +56,17 @@ public class FarsightedMobs {
 
         // Get type and find attributes to change
         EntityType<?> type = livingEntity.getType();
-        if (!Config.SERVER.mobAttributeMap.containsKey(type)) return;
-        List<Pair<Attribute, Double>> values = Config.SERVER.mobAttributeMap.get(type);
+        if (Config.SERVER.mobAttributeMap.containsKey(type)) {
+            List<Pair<Attribute, Double>> values = Config.SERVER.mobAttributeMap.get(type);
 
-        // Change attributes
-        for (Pair<Attribute, Double> change : values) {
-            ChangeBaseAttributeValue(livingEntity, change.getLeft(), change.getRight());
+            // Change attributes
+            for (Pair<Attribute, Double> change : values) {
+                ChangeBaseAttributeValue(livingEntity, change.getLeft(), change.getRight());
+            }
         }
+
+        // Fix the minecraft bug that causes entities to never update their follow range by updating it once they spawn
+        FixFollowRange(livingEntity);
     }
 
     // Change the base value of the given attribute on the given entity to the given value
@@ -72,5 +78,19 @@ public class FarsightedMobs {
             return;
         }
         attributeInstance.setBaseValue(value);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private static void FixFollowRange(LivingEntity livingEntity) {
+        if (livingEntity instanceof MonsterEntity) {
+            MonsterEntity mob = (MonsterEntity) livingEntity;
+            mob.targetSelector.availableGoals.forEach(wrappedGoal -> {
+                Goal goal = wrappedGoal.getGoal();
+                if (goal instanceof NearestAttackableTargetGoal) {
+                    NearestAttackableTargetGoal natGoal = (NearestAttackableTargetGoal) goal;
+                    natGoal.targetConditions = natGoal.targetConditions.range(livingEntity.getAttributeValue(Attributes.FOLLOW_RANGE));
+                }
+            });
+        }
     }
 }

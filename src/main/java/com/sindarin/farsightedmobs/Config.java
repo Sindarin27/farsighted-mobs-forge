@@ -27,9 +27,9 @@ public class Config {
             this.defaultHostileRange = builder
                     .comment("The minimum follow range for hostile mobs",
                             "Only overridden if the original mob's follow range was lower",
-                            "Default value: 24. Vanilla behaviour: 16")
+                            "Default value: 32. Vanilla behaviour: 16")
                     .defineInRange("minHostileFollowRange",
-                            24, 0.0, 2048.0);
+                            32, 0.0, 2048.0);
             this.mobAttributeList = builder
                     .comment("A list of follow range overrides. Entry format: \"mod:entity_id,range\"",
                             "Example: [\"minecraft:creeper,32\",\"minecraft:zombie,16\"]",
