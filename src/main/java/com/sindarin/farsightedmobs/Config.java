@@ -84,11 +84,11 @@ public class Config {
                 FarsightedMobs.LOGGER.warn("Invalid resource location in server config: " + line);
                 continue;
             }
-            if (!ForgeRegistries.ENTITIES.containsKey(entityName)) {
+            if (!ForgeRegistries.ENTITY_TYPES.containsKey(entityName)) {
                 FarsightedMobs.LOGGER.warn("Could not find entity: " + line);
                 continue;
             }
-            EntityType<?> entityType = ForgeRegistries.ENTITIES.getValue(entityName);
+            EntityType<?> entityType = ForgeRegistries.ENTITY_TYPES.getValue(entityName);
 
             // Parse value
             if (!NumberUtils.isParsable(split[1])) {

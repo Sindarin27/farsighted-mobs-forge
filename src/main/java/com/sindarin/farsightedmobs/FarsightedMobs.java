@@ -9,10 +9,9 @@ import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
-import net.minecraft.world.entity.ai.goal.target.TargetGoal;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.entity.EntityJoinWorldEvent;
+import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
@@ -35,9 +34,9 @@ public class FarsightedMobs {
     }
 
     @SubscribeEvent
-    public void onMobSpawn(EntityJoinWorldEvent event) {
+    public void onMobSpawn(EntityJoinLevelEvent event) {
         // Trust the server on this one
-        if (event.getWorld().isClientSide) return;
+        if (event.getLevel().isClientSide) return;
 
         // Get the entity
         Entity entity = event.getEntity();
@@ -73,7 +72,7 @@ public class FarsightedMobs {
         AttributeInstance attributeInstance = entity.getAttribute(attribute);
         // Safety goes first
         if (attributeInstance == null) {
-            LOGGER.warn("No attribute instance found for " + attribute.getRegistryName());
+            LOGGER.warn("No attribute instance found for " + attribute.getDescriptionId());
             return;
         }
         attributeInstance.setBaseValue(value);
