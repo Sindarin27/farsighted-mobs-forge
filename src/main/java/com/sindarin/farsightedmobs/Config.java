@@ -2,20 +2,16 @@ package com.sindarin.farsightedmobs;
 
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.config.ModConfigEvent;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.commons.lang3.tuple.Pair;
-import net.minecraft.world.entity.ai.attributes.Attribute;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class Config {
     public static class Server {
@@ -41,17 +37,15 @@ public class Config {
         }
 
         public void onLoadConfig() {
+            FarsightedMobs.LOGGER.info("Loading config");
             mobAttributeMap = new HashMap<>();
             Map<EntityType<?>, Pair<Attribute, Double>> followRanges = parseMobAttributes(mobAttributeList.get(), Attributes.FOLLOW_RANGE, 0, 2048);
             for (Map.Entry<EntityType<?>, Pair<Attribute, Double>> attribute : followRanges.entrySet()) {
                 // Map already contains this mob. Add the extra attribute
-                if (mobAttributeMap.containsKey(attribute.getKey())) {
-                    mobAttributeMap.get(attribute.getKey()).add(attribute.getValue());
+                if (!mobAttributeMap.containsKey(attribute.getKey())) {
+                    mobAttributeMap.put(attribute.getKey(), new ArrayList<>());
                 }
-                // Map does not yet contain this mob. Add it together with the attribute.
-                else {
-                    mobAttributeMap.put(attribute.getKey(), Collections.singletonList(attribute.getValue()));
-                }
+                mobAttributeMap.get(attribute.getKey()).add(attribute.getValue());
             }
         }
     }
