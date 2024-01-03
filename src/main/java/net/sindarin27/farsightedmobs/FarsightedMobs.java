@@ -92,7 +92,7 @@ public class FarsightedMobs
         if (livingEntity instanceof Mob mob) {
             mob.targetSelector.getAvailableGoals().forEach(wrappedGoal -> {
                 Goal goal = wrappedGoal.getGoal();
-                if (goal instanceof NearestAttackableTargetGoal natGoal) {
+                if (goal instanceof NearestAttackableTargetGoal<?> natGoal) {
                     natGoal.targetConditions = natGoal.targetConditions.range(livingEntity.getAttributeValue(Attributes.FOLLOW_RANGE));
                 }
             });
