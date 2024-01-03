@@ -1,1 +1,1 @@
-# farsighted-mobs-forge
+# farsighted-mobs-neoforge
