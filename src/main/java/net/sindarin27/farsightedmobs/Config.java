@@ -9,7 +9,6 @@ import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.config.ModConfigEvent;
 import net.neoforged.neoforge.common.ModConfigSpec;
 import org.apache.commons.lang3.math.NumberUtils;
@@ -20,7 +19,7 @@ import java.util.*;
 
 // An example config class. This is not required, but it's a good idea to have one to keep your config organized.
 // Demonstrates how to use Forge's config APIs
-@EventBusSubscriber(modid = FarsightedMobs.MODID, bus = EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber(modid = FarsightedMobs.MOD_ID, bus = EventBusSubscriber.Bus.MOD)
 public class Config
 {
     private static final Logger LOGGER = LogUtils.getLogger();
