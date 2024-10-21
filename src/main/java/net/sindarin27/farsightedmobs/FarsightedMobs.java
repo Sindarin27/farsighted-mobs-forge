@@ -1,6 +1,7 @@
 package net.sindarin27.farsightedmobs;
 
 import com.mojang.logging.LogUtils;
+import net.minecraft.core.Holder;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -14,6 +15,7 @@ import net.minecraft.world.entity.monster.Monster;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModLoadingContext;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.neoforge.common.NeoForge;
@@ -23,8 +25,10 @@ import org.slf4j.Logger;
 
 import java.util.List;
 
-// The value here should match an entry in the META-INF/mods.toml file
+// The value here should match an entry in the META-INF/neoforge.mods.toml file
 @Mod(FarsightedMobs.MODID)
+// Register ourselves for game events we are interested in
+@EventBusSubscriber(modid = FarsightedMobs.MODID)
 public class FarsightedMobs
 {
     // Define mod id in a common place for everything to reference
@@ -36,15 +40,12 @@ public class FarsightedMobs
     // FML will recognize some parameter types like IEventBus or ModContainer and pass them in automatically.
     public FarsightedMobs(IEventBus modEventBus)
     {
-        // Register ourselves for server and other game events we are interested in
-        NeoForge.EVENT_BUS.register(this);
-        
         // Register our mod's ModConfigSpec so that FML can create and load the config file for us
         ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, Config.SPEC);
     }
 
     @SubscribeEvent
-    public void onMobSpawn(MobSpawnEvent.FinalizeSpawn event) {
+    public static void onMobSpawn(MobSpawnEvent.FinalizeSpawn event) {
         // Trust the server on this one
         if (event.getLevel().isClientSide()) return;
 
@@ -66,10 +67,10 @@ public class FarsightedMobs
         // Get type and find attributes to change
         EntityType<?> type = livingEntity.getType();
         if (Config.mobAttributeMap.containsKey(type)) {
-            List<Pair<Attribute, Double>> values = Config.mobAttributeMap.get(type);
+            List<Pair<Holder<Attribute>, Double>> values = Config.mobAttributeMap.get(type);
 
             // Change attributes
-            for (Pair<Attribute, Double> change : values) {
+            for (Pair<Holder<Attribute>, Double> change : values) {
                 ChangeBaseAttributeValue(livingEntity, change.getLeft(), change.getRight());
             }
         }
@@ -78,11 +79,11 @@ public class FarsightedMobs
     }
 
     // Change the base value of the given attribute on the given entity to the given value
-    private static void ChangeBaseAttributeValue(LivingEntity entity, Attribute attribute, double value) {
+    private static void ChangeBaseAttributeValue(LivingEntity entity, Holder<Attribute> attribute, double value) {
         AttributeInstance attributeInstance = entity.getAttribute(attribute);
         // Safety goes first
         if (attributeInstance == null) {
-            LOGGER.warn("No attribute instance found for " + attribute.getDescriptionId());
+            LOGGER.warn("No attribute instance found for " + attribute.value().getDescriptionId());
             return;
         }
         attributeInstance.setBaseValue(value);

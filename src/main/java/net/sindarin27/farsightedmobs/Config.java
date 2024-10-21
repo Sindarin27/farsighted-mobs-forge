@@ -1,12 +1,14 @@
 package net.sindarin27.farsightedmobs;
 
 import com.mojang.logging.LogUtils;
+import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.config.ModConfigEvent;
 import net.neoforged.neoforge.common.ModConfigSpec;
@@ -18,7 +20,7 @@ import java.util.*;
 
 // An example config class. This is not required, but it's a good idea to have one to keep your config organized.
 // Demonstrates how to use Forge's config APIs
-@Mod.EventBusSubscriber(modid = FarsightedMobs.MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber(modid = FarsightedMobs.MODID, bus = EventBusSubscriber.Bus.MOD)
 public class Config
 {
     private static final Logger LOGGER = LogUtils.getLogger();
@@ -40,7 +42,7 @@ public class Config
     static final ModConfigSpec SPEC = BUILDER.build();
 
     public static double defaultHostileRange;
-    public static Map<EntityType<?>, List<Pair<Attribute, Double>>> mobAttributeMap;
+    public static Map<EntityType<?>, List<Pair<Holder<Attribute>, Double>>> mobAttributeMap;
 
     private static boolean validateEntityNameWithValue(final Object obj)
     {
@@ -58,9 +60,9 @@ public class Config
         LOGGER.info("Loading config");
         defaultHostileRange = DEFAULT_HOSTILE_RANGE.get();
         mobAttributeMap = new HashMap<>();
-        Map<EntityType<?>, Pair<Attribute, Double>> followRanges = 
+        Map<EntityType<?>, Pair<Holder<Attribute>, Double>> followRanges = 
                 parseMobAttributes(MOB_ATTRIBUTE_LIST.get(), Attributes.FOLLOW_RANGE, 0, 2048);
-        for (Map.Entry<EntityType<?>, Pair<Attribute, Double>> attribute : followRanges.entrySet()) {
+        for (Map.Entry<EntityType<?>, Pair<Holder<Attribute>, Double>> attribute : followRanges.entrySet()) {
             // Map already contains this mob. Add the extra attribute
             if (!mobAttributeMap.containsKey(attribute.getKey())) {
                 mobAttributeMap.put(attribute.getKey(), new ArrayList<>());
@@ -69,13 +71,13 @@ public class Config
         }
     }
 
-    public static Map<EntityType<?>, Pair<Attribute, Double>> parseMobAttributes(
+    public static Map<EntityType<?>, Pair<Holder<Attribute>, Double>> parseMobAttributes(
             List<? extends String> unparsed,
-            Attribute attribute,
+            Holder<Attribute> attribute,
             double minValue,
             double maxValue
     ) {
-        Map<EntityType<?>, Pair<Attribute, Double>> map = new HashMap<>();
+        Map<EntityType<?>, Pair<Holder<Attribute>, Double>> map = new HashMap<>();
         for (String line : unparsed) {
             String[] split = line.split(",");
             if (split.length != 2) {
